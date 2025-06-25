@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Builder</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 400px 1fr;
+            gap: 20px;
+            height: calc(100vh - 40px);
+        }
+        
+        .sidebar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 24px;
+            overflow-y: auto;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        
+        .preview-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 24px;
+            overflow-y: auto;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        
+        .sidebar h2 {
+            color: #2d3748;
+            margin-bottom: 24px;
+            font-size: 24px;
+            font-weight: 700;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #4a5568;
+            font-size: 14px;
+        }
+        
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.2s;
+            background: white;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #6437ff;
+            box-shadow: 0 0 0 3px rgba(100, 55, 255, 0.1);
+        }
+        
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        .section-header {
+            background: #f7fafc;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin: 24px 0 16px 0;
+            font-weight: 600;
+            color: #2d3748;
+            border-left: 4px solid #6437ff;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #6437ff, #8b5cf6);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            width: 100%;
+            margin-top: 20px;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(100, 55, 255, 0.4);
+        }
+        
+        .preview-frame {
+            background: #f4f4f4;
+            border-radius: 12px;
+            padding: 20px;
+            min-height: 600px;
+        }
+        
+        .email-preview {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .color-input-group {
+            display: flex;
+            gap: 12px;
+            align-items: flex-end;
+        }
+        
+        .color-input-group input[type="color"] {
+            width: 50px;
+            height: 44px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        
+        .color-input-group input[type="text"] {
+            flex: 1;
+        }
+        
+        .section-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        
+        .section-toggle input[type="checkbox"] {
+            width: auto;
+        }
+        
+        .section-controls {
+            padding-left: 24px;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+        
+        .section-controls.active {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <h2>Email Builder</h2>
+            
+            <div class="section-header">🎨 Brand Settings</div>
+            <div class="form-group">
+                <label>Logo URL</label>
+                <input type="url" id="logoUrl" placeholder="https://example.com/logo.png">
+            </div>
+            <div class="form-group">
+                <label>Brand Color</label>
+                <div class="color-input-group">
+                    <input type="color" id="brandColor" value="#6437ff">
+                    <input type="text" id="brandColorText" value="#6437ff">
+                </div>
+            </div>
+            
+            <div class="section-header">📝 Main Content</div>
+            <div class="form-group">
+                <label>Email Subject/Title</label>
+                <input type="text" id="emailTitle" placeholder="Your amazing subject line">
+            </div>
+            <div class="form-group">
+                <label>Main Headline</label>
+                <input type="text" id="mainHeadline" placeholder="Your main headline here">
+            </div>
+            <div class="form-group">
+                <label>Introduction Text</label>
+                <textarea id="introText" placeholder="Write your introduction text here..."></textarea>
+            </div>
+            <div class="form-group">
+                <label>Main CTA Text</label>
+                <input type="text" id="mainCtaText" placeholder="Learn more">
+            </div>
+            <div class="form-group">
+                <label>Main CTA Link</label>
+                <input type="url" id="mainCtaLink" placeholder="https://example.com">
+            </div>
+            
+            <div class="section-header">🔧 Content Sections</div>
+            
+            <!-- Section 1 -->
+            <div class="section-toggle">
+                <input type="checkbox" id="section1Enabled" checked>
+                <label for="section1Enabled">Section 1</label>
+            </div>
+            <div class="section-controls active" id="section1Controls">
+                <div class="form-group">
+                    <label>Section 1 Title</label>
+                    <input type="text" id="section1Title" placeholder="Feature title">
+                </div>
+                <div class="form-group">
+                    <label>Section 1 Image URL</label>
+                    <input type="url" id="section1Image" placeholder="https://example.com/image.jpg">
+                </div>
+                <div class="form-group">
+                    <label>Section 1 Description</label>
+                    <textarea id="section1Desc" placeholder="Describe this feature..."></textarea>
+                </div>
+            </div>
+            
+            <!-- Section 2 -->
+            <div class="section-toggle">
+                <input type="checkbox" id="section2Enabled" checked>
+                <label for="section2Enabled">Section 2</label>
+            </div>
+            <div class="section-controls active" id="section2Controls">
+                <div class="form-group">
+                    <label>Section 2 Title</label>
+                    <input type="text" id="section2Title" placeholder="Feature title">
+                </div>
+                <div class="form-group">
+                    <label>Section 2 Image URL</label>
+                    <input type="url" id="section2Image" placeholder="https://example.com/image.jpg">
+                </div>
+                <div class="form-group">
+                    <label>Section 2 Description</label>
+                    <textarea id="section2Desc" placeholder="Describe this feature..."></textarea>
+                </div>
+            </div>
+            
+            <!-- Section 3 -->
+            <div class="section-toggle">
+                <input type="checkbox" id="section3Enabled" checked>
+                <label for="section3Enabled">Section 3</label>
+            </div>
+            <div class="section-controls active" id="section3Controls">
+                <div class="form-group">
+                    <label>Section 3 Title</label>
+                    <input type="text" id="section3Title" placeholder="Feature title">
+                </div>
+                <div class="form-group">
+                    <label>Section 3 Image URL</label>
+                    <input type="url" id="section3Image" placeholder="https://example.com/image.jpg">
+                </div>
+                <div class="form-group">
+                    <label>Section 3 Description</label>
+                    <textarea id="section3Desc" placeholder="Describe this feature..."></textarea>
+                </div>
+            </div>
+            
+            <div class="section-header">🔗 Footer</div>
+            <div class="form-group">
+                <label>Closing Text</label>
+                <textarea id="closingText" placeholder="Hope you enjoy the update,\nTeam [Your Company]"></textarea>
+            </div>
+            <div class="form-group">
+                <label>Company Address</label>
+                <input type="text" id="companyAddress" placeholder="123 Main St, City, State 12345">
+            </div>
+            <div class="form-group">
+                <label>Contact Email</label>
+                <input type="email" id="contactEmail" placeholder="hello@company.com">
+            </div>
+            
+            <button class="btn-primary" onclick="exportHTML()">📥 Export HTML</button>
+        </div>
+        
+        <div class="preview-container">
+            <h2 style="margin-bottom: 20px; color: #2d3748;">📧 Email Preview</h2>
+            <div class="preview-frame">
+                <div class="email-preview" id="emailPreview">
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        
+        document.getElementById('logoUrl').value = 'https://via.placeholder.com/136x32/6437ff/ffffff?text=LOGO';
+        document.getElementById('emailTitle').value = 'Hey there!';
+        document.getElementById('mainHeadline').value = 'Amazing New Feature: Transform Your Workflow';
+        document.getElementById('introText').value = 'We\'re excited to introduce our latest feature that will revolutionize how you work. This powerful new tool makes complex tasks simple and helps you achieve more in less time.';
+        document.getElementById('mainCtaText').value = 'Learn more';
+        document.getElementById('mainCtaLink').value = 'https://example.com';
+        document.getElementById('section1Title').value = 'Streamlined Process';
+        document.getElementById('section1Image').value = 'https://via.placeholder.com/544x300/f0f0f0/666666?text=Feature+Image';
+        document.getElementById('section1Desc').value = 'Experience a completely redesigned workflow that eliminates friction and helps you focus on what matters most.';
+        document.getElementById('section2Title').value = 'Smart Automation';
+        document.getElementById('section2Image').value = 'https://via.placeholder.com/544x300/f0f0f0/666666?text=Feature+Image';
+        document.getElementById('section2Desc').value = 'Let our intelligent automation handle repetitive tasks while you focus on creative and strategic work.';
+        document.getElementById('section3Title').value = 'Enhanced Collaboration';
+        document.getElementById('section3Image').value = 'https://via.placeholder.com/544x300/f0f0f0/666666?text=Feature+Image';
+        document.getElementById('section3Desc').value = 'Work seamlessly with your team using our new collaboration tools that keep everyone in sync.';
+        document.getElementById('closingText').value = 'Hope you enjoy the update,\nTeam Example';
+        document.getElementById('companyAddress').value = '123 Innovation St, Tech City, TC 12345';
+        document.getElementById('contactEmail').value = 'hello@example.com';
+        
+        
+        document.getElementById('brandColor').addEventListener('input', function() {
+            document.getElementById('brandColorText').value = this.value;
+            updatePreview();
+        });
+        
+        document.getElementById('brandColorText').addEventListener('input', function() {
+            if (this.value.match(/^#[0-9A-F]{6}$/i)) {
+                document.getElementById('brandColor').value = this.value;
+                updatePreview();
+            }
+        });
+        
+        
+        function setupSectionToggle(sectionNum) {
+            const checkbox = document.getElementById(`section${sectionNum}Enabled`);
+            const controls = document.getElementById(`section${sectionNum}Controls`);
+            
+            checkbox.addEventListener('change', function() {
+                if (this.checked) {
+                    controls.classList.add('active');
+                } else {
+                    controls.classList.remove('active');
+                }
+                updatePreview();
+            });
+        }
+        
+        setupSectionToggle(1);
+        setupSectionToggle(2);
+        setupSectionToggle(3);
+        
+       
+        document.querySelectorAll('input, textarea, select').forEach(input => {
+            input.addEventListener('input', updatePreview);
+        });
+        
+        function updatePreview() {
+            const brandColor = document.getElementById('brandColor').value;
+            const logoUrl = document.getElementById('logoUrl').value;
+            const mainHeadline = document.getElementById('mainHeadline').value;
+            const introText = document.getElementById('introText').value.replace(/\n/g, '<br>');
+            const mainCtaText = document.getElementById('mainCtaText').value;
+            const mainCtaLink = document.getElementById('mainCtaLink').value;
+            const closingText = document.getElementById('closingText').value.replace(/\n/g, '<br>');
+            const companyAddress = document.getElementById('companyAddress').value;
+            const contactEmail = document.getElementById('contactEmail').value;
+            
+            let sectionsHTML = '';
+            
+            for (let i = 1; i <= 3; i++) {
+                const enabled = document.getElementById(`section${i}Enabled`).checked;
+                if (enabled) {
+                    const title = document.getElementById(`section${i}Title`).value;
+                    const image = document.getElementById(`section${i}Image`).value;
+                    const desc = document.getElementById(`section${i}Desc`).value;
+                    
+                    sectionsHTML += `
+                        <tr>
+                            <td style="padding: 15px 0 17px 0">
+                                <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                                    <tr>
+                                        <td style="background-color: #e4e4e4; height: 1px; line-height: 1px; font-size: 1px;">&nbsp;</td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 28px 28px 12px">
+                                <span style="display: block; color: #14181f; letter-spacing: -1px; font-size: 38px; line-height: 36px; font-family: Arial, Helvetica, sans-serif; font-weight: bold;">${title}</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 24px 28px 0 28px">
+                                <img src="${image}" alt="${title}" width="544" style="width: 100%; max-width: 544px; display: block; border-radius: 8px;">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 18px 28px 28px 28px">
+                                <span style="display: block; font-size: 21px; line-height: 25px; color: #14181f; font-family: Arial, Helvetica, sans-serif;">${desc}</span>
+                            </td>
+                        </tr>
+                    `;
+                }
+            }
+            
+            const emailHTML = `
+                <table width="100%" bgcolor="#f4f4f4" cellpadding="0" cellspacing="0" border="0" style="width: 100%; background-color: #f4f4f4;">
+                    <tr>
+                        <td align="center" style="padding-top: 12px;">
+                            <table width="600" cellpadding="0" cellspacing="0" border="0" style="max-width: 600px; width: 100%; background: #fff; border-radius: 10px; overflow: hidden;">
+                                <!-- Header -->
+                                <tr>
+                                    <td style="padding: 28px 28px 0 28px;">
+                                        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                                            <tr>
+                                                <td align="center" style="width: 136px;">
+                                                    <img src="${logoUrl}" width="136" height="32" alt="Logo" style="display: block; width: 136px; max-width: 136px; height: auto;">
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                                
+                                <!-- Main Headline -->
+                                <tr>
+                                    <td style="padding: 28px 28px 24px 28px;">
+                                        <span style="display: block; color: #14181f; letter-spacing: -1px; font-size: 38px; line-height: 36px; font-family: Arial, Helvetica, sans-serif; font-weight: bold;">${mainHeadline}</span>
+                                    </td>
+                                </tr>
+                                
+                                <!-- Introduction -->
+                                <tr>
+                                    <td style="padding: 12px 28px 28px 28px;">
+                                        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                                            <tr>
+                                                <td style="font-size: 21px; line-height: 25px; color: #14181f; font-family: Arial, Helvetica, sans-serif;">
+                                                    ${introText}
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td align="center" style="padding: 28px 0px;">
+                                                    <a href="${mainCtaLink}" style="color: #fff; background-color: ${brandColor}; border-radius: 16px; display: inline-block; width: 100%; max-width: 368px; height: 56px; line-height: 56px; font-size: 21px; font-family: Arial, Helvetica, sans-serif; text-align: center; text-decoration: none;">${mainCtaText}</a>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                                
+                                ${sectionsHTML}
+                                
+                                <!-- Final CTA -->
+                                <tr>
+                                    <td style="padding: 15px 0 17px 0;">
+                                        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                                            <tr>
+                                                <td style="background-color: #e4e4e4; height: 1px; line-height: 1px; font-size: 1px;">&nbsp;</td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                                
+                                <tr>
+                                    <td style="padding: 18px 28px 0 28px;">
+                                        <span style="display: block; font-size: 21px; line-height: 25px; color: #14181f; font-family: Arial, Helvetica, sans-serif;">
+                                            Ready to experience the difference? Take the next step and transform your workflow today.
+                                        </span>
+                                    </td>
+                                </tr>
+                                
+                                <tr>
+                                    <td align="center" style="padding: 28px 0px;">
+                                        <a href="${mainCtaLink}" style="color: #fff; background-color: ${brandColor}; border-radius: 16px; display: inline-block; width: 100%; max-width: 368px; height: 56px; line-height: 56px; font-size: 21px; font-family: Arial, Helvetica, sans-serif; text-align: center; text-decoration: none;">${mainCtaText}</a>
+                                    </td>
+                                </tr>
+                                
+                                <tr>
+                                    <td style="padding: 18px 28px 28px 28px;">
+                                        <span style="display: block; font-size: 21px; line-height: 25px; color: #14181f; font-family: Arial, Helvetica, sans-serif;">
+                                            ${closingText}
+                                        </span>
+                                    </td>
+                                </tr>
+                                
+                                <!-- Footer -->
+                                <tr>
+                                    <td style="background-color: #000; padding: 0px 0 24px 0;">
+                                        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                                            <tr>
+                                                <td align="center" style="padding-bottom: 10px;">
+                                                    <img src="${logoUrl}" width="136" height="32" alt="Logo" style="display: block; width: 100%; height: auto;">
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td align="center" style="padding-top: 24px;">
+                                                    <div style="color: #fff; font-size: 12px; line-height: 16px; font-family: Arial, Helvetica, sans-serif; text-align: center;">
+                                                        ${companyAddress}
+                                                    </div>
+                                                    <div style="color: #fff; font-size: 12px; line-height: 16px; font-family: Arial, Helvetica, sans-serif; text-align: center; padding-top: 8px;">
+                                                        This email was sent to <a style="color: #fff; text-decoration: underline;">${contactEmail}</a>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            `;
+            
+            document.getElementById('emailPreview').innerHTML = emailHTML;
+        }
+        
+        function exportHTML() {
+            const fullHTML = `<!DOCTYPE html>
+<html>
+<head>
+    <meta content="text/html;charset=UTF-8" http-equiv="Content-Type">
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <title>${document.getElementById('emailTitle').value}</title>
+    <style type="text/css">
+        /* Gmail resets and fixes */
+        body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+        table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+        img { -ms-interpolation-mode: bicubic; border: 0; display: block; outline: none; text-decoration: none; }
+        a { text-decoration: none; color: inherit; }
+        .ExternalClass { width: 100%; }
+        .ExternalClass, .ExternalClass p, .ExternalClass span, .ExternalClass font, .ExternalClass td, .ExternalClass div { line-height: 100%; }
+        table { border-collapse: collapse !important; }
+        body { margin: 0; padding: 0; width: 100% !important; background-color: #f4f4f4; }
+        
+        /* Responsive */
+        @media only screen and (max-width: 600px) {
+            .heading-xl { font-size: 32px !important; line-height: 36px !important; }
+            .text-lg { font-size: 16px !important; line-height: 20px !important; }
+            .container { width: 100% !important; }
+            .main-table { width: 100% !important; }
+            .img-responsive { width: 100% !important; height: auto !important; }
+            .btn-main { font-size: 18px !important; }
+        }
+    </style>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f4f4f4;">
+    <center>
+        ${document.getElementById('emailPreview').innerHTML}
+    </center>
+</body>
+</html>`;
+            
+            const blob = new Blob([fullHTML], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'email-template.html';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+        
+        
+        updatePreview();
+    </script>
+</body>
+</html>
